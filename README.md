@@ -1,4 +1,6 @@
 # work-showcase
-showcase of projects.
+Showcase of projects.
 
-C# is OOP (unity), it wont make much sence.
+C++ - basics learnt in colledge.
+C# - OOP (unity).
+Python - some scripting tryouts.
