@@ -53,6 +53,9 @@ public class playerController : MonoBehaviour
     string lap2;
     string lap3;
 
+    //restartGame
+    public restartGame theGameManager;
+    public Text warningText;
 
     // Start is called before the first frame update
     void Start()
@@ -192,6 +195,13 @@ public class playerController : MonoBehaviour
             {
                 lap3 = timerMin + ":" + timerSec.ToString("F2");
             }
+            //restart
+            if (laps == 3)
+            {
+                warningText.text = "Game about to restart";
+                warningText.gameObject.SetActive(true);
+                theGameManager.restartTheGame();
+            }
         }
         //score punishment
         if (collision.gameObject.layer == LayerMask.NameToLayer("Score-"))
@@ -208,16 +218,19 @@ public class playerController : MonoBehaviour
         }
         if (collision.gameObject.name == "checkpoint" + (checkpointProgress - 1).ToString() || ((checkpointProgress == 0 || checkpointProgress == 1) && collision.gameObject.name == "checkpoint" + checkpointCount.ToString()))
         {
+            wrongWay.text = "You are going the wrong way!";
             wrongWay.gameObject.SetActive(true);
         }
         if (collision.gameObject.name == "checkpoint" + checkpointProgress)
         {
             wrongWay.gameObject.SetActive(false);
         }
+    }
 
-
+    private void OnTriggerStay2D(Collider2D collision)
+    {
         //nitro fill up
-        if(collision.gameObject.name == "nitro++")
+        if (collision.gameObject.name == "nitro++")
         {
             currentNitro = maxNitro;
             nitroUseTimer = Time.time;
