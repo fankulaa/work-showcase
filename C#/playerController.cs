@@ -42,6 +42,17 @@ public class playerController : MonoBehaviour
     float timerSec;
     int timerMin;
 
+    //checkpoints
+    int checkpointProgress;
+    public int checkpointCount=18;
+    public Text wrongWay;
+
+    //laps
+    int laps;
+    string lap1;
+    string lap2;
+    string lap3;
+
 
     // Start is called before the first frame update
     void Start()
@@ -80,7 +91,7 @@ public class playerController : MonoBehaviour
         }
 
         //Nitro
-        if ((Input.GetKey("joystick button 0") || Input.GetKey("space")) && !usingNitro && (currentNitro - nitroConsumtion) > 0 && Time.time>nitroUseTimer)
+        if ((Input.GetKey("joystick button 0") || Input.GetKey("space")) && !usingNitro && (currentNitro - nitroConsumtion) > 0 && Time.time > nitroUseTimer)
         {
             speed = speed * nitroSpeedMultiplier;
             usingNitro = true;
@@ -97,12 +108,13 @@ public class playerController : MonoBehaviour
             nitroSlider.value = currentNitro;
         }
 
-        if((currentNitro - nitroConsumtion) < maxNitro/((maxNitro / 100) * 2)  )
+        if ((currentNitro - nitroConsumtion) < maxNitro / ((maxNitro / 100) * 2))
         {
             nitroUseTimer = Time.time + nitroCooldown;
         }
-        
-        if(!usingNitro){
+
+        if (!usingNitro)
+        {
 
 
             if (currentNitro < maxNitro)
@@ -115,7 +127,7 @@ public class playerController : MonoBehaviour
             }
             nitroSlider.value = currentNitro;
         }
-            
+
 
         //timer
         timer = Time.time;
@@ -123,16 +135,19 @@ public class playerController : MonoBehaviour
         timerSec = timer - (timerMin * 60);
         if (timerSec < 10)
         {
-            timerText.text = " Timer: " + timerMin + ":0" + timerSec.ToString("F2");
+            timerText.text = "Timer: " + timerMin + ":0" + timerSec.ToString("F2");
         }
         else
         {
-            timerText.text = " Timer: " + timerMin + ":" + timerSec.ToString("F2");
+            timerText.text = "Timer: " + timerMin + ":" + timerSec.ToString("F2");
         }
 
-        //score
-        scoreText.text = " Score: " + score.ToString();
-
+        //score + laps
+        score++;
+        scoreText.text = "Score: " + score.ToString() + System.Environment.NewLine +
+        "Lap1: " + lap1 + System.Environment.NewLine +
+        "Lap2: " + lap2 + System.Environment.NewLine +
+        "Lap3: " + lap3;
     }
 
 
@@ -147,10 +162,65 @@ public class playerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //score
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Score+") && Time.time > nextScore)
+        if (collision.gameObject.name == "startingLine" && Time.time > nextScore && checkpointProgress == checkpointCount)
         {
             nextScore = Time.time + scoreCooldown;
-            score += 50;
+            score += 100000;
+            checkpointProgress = 0;
+            laps++;
+            if (laps == 1 && timerSec < 10)
+            {
+                lap1 = timerMin + ":0" + timerSec.ToString("F2");
+            }
+            else if (laps == 1 && timerSec > 10)
+            {
+                lap1 = timerMin + ":" + timerSec.ToString("F2");
+            }
+            else if (laps == 2 && timerSec < 10)
+            {
+                lap2 = timerMin + ":0" + timerSec.ToString("F2");
+            }
+            else if (laps == 2 && timerSec > 10)
+            {
+                lap2 = timerMin + ":" + timerSec.ToString("F2");
+            }
+            else if (laps == 3 && timerSec < 10)
+            {
+                lap3 = timerMin + ":0" + timerSec.ToString("F2");
+            }
+            else if (laps == 3 && timerSec > 10)
+            {
+                lap3 = timerMin + ":" + timerSec.ToString("F2");
+            }
+        }
+        //score punishment
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Score-"))
+        {
+            score -= 500;
+        }
+
+
+        //checkpoints
+        if (collision.gameObject.name == "checkpoint" + (checkpointProgress + 1).ToString())
+        {
+            checkpointProgress++;
+            wrongWay.gameObject.SetActive(false);
+        }
+        if (collision.gameObject.name == "checkpoint" + (checkpointProgress - 1).ToString() || ((checkpointProgress == 0 || checkpointProgress == 1) && collision.gameObject.name == "checkpoint" + checkpointCount.ToString()))
+        {
+            wrongWay.gameObject.SetActive(true);
+        }
+        if (collision.gameObject.name == "checkpoint" + checkpointProgress)
+        {
+            wrongWay.gameObject.SetActive(false);
+        }
+
+
+        //nitro fill up
+        if(collision.gameObject.name == "nitro++")
+        {
+            currentNitro = maxNitro;
+            nitroUseTimer = Time.time;
         }
     }
 }
