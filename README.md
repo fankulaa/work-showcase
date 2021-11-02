@@ -1,7 +1,7 @@
 # work-showcase
 Showcase of projects.
 
-C++ - basics learnt in colledge.
+C++ - basics learnt in college.
 
 C# - OOP (unity).
 
