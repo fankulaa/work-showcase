@@ -1,2 +1,2 @@
 # work-showcase
-showcase of old projects.
+showcase of projects.
